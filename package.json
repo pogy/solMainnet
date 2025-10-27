@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "@jup-ag/api": "^6.0.45",
+    "@jup-ag/common": "^6.1.0",
+    "@solana/spl-token": "^0.1.8",
+    "@solana/wallet-adapter-base": "^0.9.27",
+    "@solana/web3.js": "^1.98.4",
+    "bip39": "^3.1.0",
+    "ed25519-hd-key": "^1.3.0",
+    "https-proxy-agent": "^7.0.6",
+    "solc": "^0.8.30",
+    "tweetnacl": "^1.0.3"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "add": "node utils/wallet_aggregator.js",
+    "generate": "node utils/wallet_generator.js"
+  },
+  "name": "monadtestnet",
+  "version": "1.0.0",
+  "description": "Welcome to Monad Testnet, this script will help you to be well positioned for future Testnet launch implementing multi Faucet claim, Testnet Apps Interactions, Protocols, Contract Deployment, etc... All possible stuff related to Monad",
+  "main": "index.js",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@openzeppelin/contracts": "^5.2.0",
+    "ethers": "^5.8.0",
+    "hardhat": "^2.22.19"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

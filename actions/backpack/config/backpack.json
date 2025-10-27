@@ -1,0 +1,48 @@
+{
+    "name": "Crystal",
+    "description": "Crystal is a fully on-chain CLOB exchange that brings CEX-grade performance to the EVM without compromising on security or composability.",
+    "live": true,
+    "categories": ["WALLET::CEX"],
+    "BASE_URL": "https://api.backpack.exchange",
+    "BASE_URL_DEV": "https://api.bpx.dev",
+    "WS_URL": "wss://ws.backpack.exchange",
+    "WS_URL_DEV": "wss://ws.bpx.dev",
+
+    "addresses": {
+        "OldRouter": "0xefe2f96DF94Bd1337E79bdF3D524cEc44b10B45C",
+        "OldFactory": "0xC7E19A8Ccd223e7DEF92f4Dd620030f106409CF0",
+        "RouterFactory": "0x4e77071D619Aa164cA6427547aefA41AC51BE7A0",
+        "DataHelper": "0xF6759341d82bB4Fc10e89E43c83568688Cada58f"
+    },
+    "accounts": [{
+        "apiKey": "MEYKH6nIWSvxAJ2B/pnybCr9cXFEIbj3fVI2/QHbNR0=",
+        "apiSecret": "mAeZeAfPz8E1D34c9YfjfYzG+V9avE4tpKWIDN90ub8="
+    }],
+    "instructionMap" :{
+      "PATCH /api/v1/account": "accountUpdate",
+      "POST /api/v1/borrowLend": "borrowLendExecute",
+      "GET /api/v1/borrowLend/positions": "borrowLendPositionQuery",
+      "GET /api/v1/capital/collateral": "collateralQuery",
+      "DELETE /api/v1/order": "orderCancel",
+      "POST /api/v1/order": "orderExecute",
+      "DELETE /api/v1/orders": "orderCancelAll",
+      "GET /api/v1/position": "positionQuery",
+      "GET /api/v1/account": "accountQuery",
+      "GET /api/v1/capital": "balanceQuery",
+      "GET /api/v1/order": "orderQuery",
+      "GET /api/v1/orders": "orderQueryAll",
+      "GET /api/v1/rfq/quote": "quoteSubmit",
+      "GET /wapi/v1/capital/deposit/address": "depositAddressQuery",
+      "GET /wapi/v1/capital/deposits": "depositQueryAll",
+      "POST /wapi/v1/capital/withdrawals": "withdraw",
+      "GET /wapi/v1/capital/withdrawals": "withdrawalQueryAll",
+      "GET /wapi/v1/history/borrowLend": "borrowHistoryQueryAll",
+      "GET /wapi/v1/history/fills": "fillHistoryQueryAll",
+      "GET /wapi/v1/history/funding": "fundingHistoryQueryAll",
+      "GET /wapi/v1/history/interest": "interestHistoryQueryAll",
+      "GET /wapi/v1/history/orders": "orderHistoryQueryAll",
+      "GET /wapi/v1/history/pnl": "pnlHistoryQueryAll",
+      "GET /wapi/v1/history/settlement": "settlementHistoryQueryAll",
+      "GET /wapi/v1/keypair/refresh": "refreshKeypair"
+    }
+}

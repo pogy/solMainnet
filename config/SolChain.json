@@ -1,0 +1,9 @@
+{
+  "RPC_URL": "https://mainnet.helius-rpc.com/?api-key=cf59a484-f52f-4ba4-b2f7-9c0295a4eedf",
+  "CHAIN_ID": 8453,
+  "SYMBOL": "SOL",
+  "TX_EXPLORER": "https://www.oklink.com/zh-hans/solana/",
+  "ADDRESS_EXPLORER": "https://www.oklink.com/zh-hans/solana/account/",
+  "bestGasPrice": "",
+  "superGasPrice": ""
+}

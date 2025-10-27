@@ -1,0 +1,14 @@
+{
+    "name": "jupiter",
+    "description": "",
+    "live": true,
+    "categories": ["defi"],
+    "JUPITER_API_CONFIG": "https://lite-api.jup.ag/swap/v1",
+    "links": {
+        "project": "",
+        "twitter": "https://x.com/",
+        "info": "launch pool",
+        "github": "",
+        "docs": ""
+    }
+}
