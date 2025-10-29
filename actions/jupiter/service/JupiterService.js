@@ -39,6 +39,24 @@ class JupiterService {
       agent: this.proxyAgent,
       headers: {'Connection': 'keep-alive' }
     });
+
+    // const params = new URLSearchParams({
+    //   inputMint,
+    //   outputMint,
+    //   amount: amount.toString(),
+    //   slippageBps: slippageBps.toString(),
+    //   swapMode: 'ExactIn'
+    // });
+    // const url = `https://ultra-api.jup.ag/order?${params}`;
+
+    // const response = await fetch(url, {
+    //   agent: this.proxyAgent,
+    //   headers: {'Connection': 'keep-alive' }
+    // });
+
+    // https://ultra-api.jup.ag/order?inputMint=So11111111111111111111111111111111111111112
+    // &outputMint=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
+    // &amount=1000000000&swapMode=ExactIn
     
     if (!response.ok) {
       const error = await response.text();

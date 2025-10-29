@@ -27,21 +27,23 @@ async function execute(task){
   try{
     manager = new JupiterManager(task.privateKey, task.proxy ? task.proxy.proxyUrl :null);
     
-    for(var i=0; i<3+getRandomInt(3); i++){
+    for(var i=0; i<2+getRandomInt(3); i++){
         const balance = await manager.getSOLBalance();
         logger.log(` ${title} balance: ${balance} SOL` );
-        if(balance < 0.001){
+        if(balance < 0.01){
           logger.log(` ${title} lace of sol. balance: ${balance} SOL` );
           return
         }else if(balance > 0.03){
-          await manager.swapSOLToUSDC(MathUtil.floor(balance * 0.6, 2), 100);
+          await manager.swapSOLToUSDC(MathUtil.floor((balance-0.02) * 0.7, 3), 100);
         }else{
           const tokenAmount = await manager.getTokenBalance(USDC_CONTRACT);
           if (tokenAmount.uiAmount < 1) {      
             logger.info(chalk.red(` Jupiter swap fail! lack of USDC balance ${tokenAmount.uiAmount} < 1`));
             return;
           }
-          await manager.swapUSDCToSOL(Math.floor(tokenAmount.uiAmount), 100); 
+          let amount = Math.floor(tokenAmount.uiAmount * 0.2);
+
+          await manager.swapUSDCToSOL(amount > 0 ? amount : 1, 100); 
         }
 
         await sleep(getRandomInt(3000)+10000)
@@ -104,8 +106,8 @@ async function main() {
   }
 
   while(true){
-      await randomExecute(tasks, execute, 60000  * tasks.length);
-      await sleep(60000  * 60 * 6);
+      await randomExecute(tasks, execute, 60000 * 4 * tasks.length);
+      await sleep(60000  * 60 * 8);
   }
   
 }
