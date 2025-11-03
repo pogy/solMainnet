@@ -41,7 +41,7 @@ async function execute(task){
             logger.info(chalk.red(` Jupiter swap fail! lack of USDC balance ${tokenAmount.uiAmount} < 1`));
             return;
           }
-          let amount = Math.floor(tokenAmount.uiAmount * 0.2);
+          let amount = Math.floor(tokenAmount.uiAmount);
 
           await manager.swapUSDCToSOL(amount > 0 ? amount : 1, 100); 
         }
@@ -57,7 +57,7 @@ async function execute(task){
 }
 
 function getInfo(){
-  const TEST = "";
+  const TEST = "traffic unlock laptop shoulder cable shuffle drum educate insane tone other lock soft garlic elite awake culture convince spoil powder reunion knock tower census";
   console.log(cryptoService.encryptData(TEST))
 
   const manager = new JupiterManager(TEST, "http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_DVRMeFhlIC:monad-expensive@gate.nstproxy.io:24125");
@@ -72,6 +72,7 @@ async function init(tasks){
       task.sol_wallet_address = manager.getWalletAddress();
       task.balance = (await manager.getSOLBalance());
       await db.update_common_airdroip_task(task);
+      console.log(task.sol_wallet_address)
     }catch(error){
        console.log(error)
        console.log(task)
