@@ -6,7 +6,7 @@ const {SolUtil} = require('../../../utils/SolUtil');
 const {RPC_URL, TX_EXPLORER} = require('../../../config/SolChain');
 
 const {JupiterService} = require('../service/JupiterService');
-const {SOL_CONTRACT, USDC_CONTRACT} = require('../../../config/TokenConfig');
+const {SOL_CONTRACT, USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT} = require('../../../config/TokenConfig');
 
 
 // 你的代理服务器地址，格式为: http://[username:password@]host:port
@@ -116,6 +116,35 @@ class JupiterManager {
     if(success){
       const {txHash,txResult,status} = await SolUtil.sendTransaction(this.keypair, swapTransaction, this.connection);
       console.log(txResult);
+      logger.info(chalk.yellow(`✅  ${this.messageTitle} success ${TX_EXPLORER}${txHash}`));
+      return {
+        txHash,
+        txResult,
+        success
+      }
+    }else{
+      logger.info(chalk.red(`${this.messageTitle} error`));
+      return {
+        success: false,
+        message: 'Jupiter swap error'
+      }
+    }
+  }
+
+  // USDC转SOL示例
+  async swap(token0, token1, swapAmountHuman, slippage = 50) {
+    const tokenAmount = await this.getTokenBalance(token0);
+    if (tokenAmount.uiAmount < swapAmountHuman) {      
+      logger.info(chalk.red(` ${this.messageTitle} fail! lack of ${token0} balance ${tokenAmount.uiAmount} < ${swapAmountHuman}`));
+      return;
+    }
+    
+    const tokenDecimals = await SolUtil.getTokenDecimals(token0, this.connection);
+    // USDC有6位小数
+    const microAmount = Math.floor(swapAmountHuman * Math.pow(10, tokenDecimals));
+    const {quote, swapTransaction, success} =  await this.swapTokens(token0, token1, microAmount, slippage);
+    if(success){
+      const {txHash,txResult,status} = await SolUtil.sendTransaction(this.keypair, swapTransaction, this.connection);
       logger.info(chalk.yellow(`✅  ${this.messageTitle} success ${TX_EXPLORER}${txHash}`));
       return {
         txHash,

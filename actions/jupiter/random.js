@@ -13,7 +13,9 @@ const {MathUtil} = require('../../../common2/util/MathUtil');
 const {logger} = require('../../../common2/util/logger');
 const {getProxy} = require('../../../common2/proxy/proxy');
 const {JupiterManager} = require('./manager/JupiterManager');
-const {USDC_CONTRACT} = require('../../config/TokenConfig');
+const {SOL_CONTRACT, USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT} = require('../../config/TokenConfig');
+
+
 
 const db = new DB();
 const cryptoService = new CryptoService();
@@ -28,11 +30,11 @@ async function execute(task){
     manager = new JupiterManager(task.privateKey, task.proxy ? task.proxy.proxyUrl :null);
     
     for(var i=0; i<2+getRandomInt(3); i++){
-        const balance = await manager.getSOLBalance();
+        const balance = await manager.getSOLBalance();//有时获取不到准确余额
         logger.log(` ${title} balance: ${balance} SOL` );
         if(balance < 0.01){
           logger.log(` ${title} lace of sol. balance: ${balance} SOL` );
-          return
+          return;
         }else if(balance > 0.03){
           await manager.swapSOLToUSDC(MathUtil.floor((balance-0.02) * 0.7, 3), 100);
         }else{
@@ -46,7 +48,84 @@ async function execute(task){
           await manager.swapUSDCToSOL(amount > 0 ? amount : 1, 100); 
         }
 
-        await sleep(getRandomInt(3000)+10000)
+        await sleep(getRandomInt(3000)+30000)
+    }
+  }catch(error){
+     console.log(error)
+     const balance = await manager.getSOLBalance();
+     logger.log(` ${title} balance: ${balance} SOL` );
+     logger.error(error, chalk.red(`⚠️  Error ${title} : ${error}\n`));
+  }
+}
+
+async function swapForSol(manager){
+  let targetTokens = [USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT];
+  let tokenAmount;
+  for (let item of targetTokens){
+    tokenAmount = await manager.getTokenBalance(JLP_CONTRACT);//有时获取不到准确余额
+    logger.log(` ${title} balance: ${tokenAmount.uiAmount} JLP` );
+    if(tokenAmount.uiAmount > 0.1){
+      await manager.swap(USDC_CONTRACT, SOL_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
+      await sleep(getRandomInt(3000)+30000);
+    }
+  }
+}
+
+async function execute2(task){
+  const title = ` [Jupiter-${task.task_id}-${task.sol_wallet_address} ]`;
+
+  logger.info(chalk.green(` ${title} start`));
+  let manager ;
+  try{
+    manager = new JupiterManager(task.privateKey, task.proxy ? task.proxy.proxyUrl :null);
+    let tokenAmount;
+
+    for(var i=0; i<100+getRandomInt(30); i++){
+        const balance = await manager.getSOLBalance();//有时获取不到准确余额
+        logger.log(` ${title} balance: ${balance} SOL` );
+        if(balance < 0.01){
+          logger.log(` ${title} lace of sol. balance: ${balance} SOL` );
+          await swapForSol(manager);
+          return;
+        }
+
+        tokenAmount = await manager.getTokenBalance(GEOD_CONTRACT);//有时获取不到准确余额
+        logger.log(` ${title} balance: ${tokenAmount.uiAmount} GEOD` );
+        if(tokenAmount.uiAmount > 1){
+          await manager.swap(GEOD_CONTRACT, JLP_CONTRACT, MathUtil.floor(tokenAmount.uiAmount, 1), 100);
+          await sleep(getRandomInt(3000)+30000)
+          continue;
+        }
+
+        tokenAmount = await manager.getTokenBalance(JUP_CONTRACT);//有时获取不到准确余额
+        logger.log(` ${title} balance: ${tokenAmount.uiAmount} JUP` );
+        if(tokenAmount.uiAmount > 1){
+          await manager.swap(JUP_CONTRACT, JLP_CONTRACT, MathUtil.floor(tokenAmount.uiAmount, 1), 100);
+          await sleep(getRandomInt(3000)+30000)
+          continue;
+        }
+
+        tokenAmount = await manager.getTokenBalance(JLP_CONTRACT);//有时获取不到准确余额
+        logger.log(` ${title} balance: ${tokenAmount.uiAmount} JLP` );
+        if(tokenAmount.uiAmount > 0.1){
+          await manager.swap(JLP_CONTRACT, JUP_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
+          await sleep(getRandomInt(3000)+30000);
+          continue;
+        }
+
+        logger.log(` ${title} lace of jup & jlp. start revert` );
+
+        tokenAmount = await manager.getTokenBalance(USDC_CONTRACT);//有时获取不到准确余额
+        logger.log(` ${title} balance: ${tokenAmount.uiAmount} USDC` );
+        if(tokenAmount.uiAmount > 1){
+          await manager.swap(USDC_CONTRACT, JLP_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 1), 100);
+          await sleep(getRandomInt(3000)+30000);
+        }
+
+        if(balance > 0.03){
+          await manager.swap(SOL_CONTRACT, JLP_CONTRACT, MathUtil.floor((balance-0.02) * 0.7, 3), 100);
+          await sleep(getRandomInt(3000)+30000);
+        }
     }
   }catch(error){
      console.log(error)
@@ -57,7 +136,7 @@ async function execute(task){
 }
 
 function getInfo(){
-  const TEST = "traffic unlock laptop shoulder cable shuffle drum educate insane tone other lock soft garlic elite awake culture convince spoil powder reunion knock tower census";
+  const TEST = "atraffic unlock laptop shoulder cable shuffle drum educate insane tone other lock soft garlic elite awake culture convince spoil powder reunion knock tower census";
   console.log(cryptoService.encryptData(TEST))
 
   const manager = new JupiterManager(TEST, "http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_DVRMeFhlIC:monad-expensive@gate.nstproxy.io:24125");
@@ -86,29 +165,24 @@ async function main() {
   await cryptoService.init();
 
   // await init(tasks)
-  // return
-  // const ids = ["FVB88tDoR2mqPusdo8B4FtfBuFzhmrf4py9pTkfVStve"];
-  // tasks = tasks.filter(task => (ids.includes(task.sol_wallet_address)));
+  // return;
 
-  // http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_DVRMeFhlIC:monad-expensive@gate.nstproxy.io:24125
+  // const ids = ["6w6VoJ37PMujWA2C1B4XvNLTGMez6ehNEjSiq8mK7FTF"];
+  // tasks = tasks.filter(task => (ids.includes(task.sol_wallet_address)));
 
   for(let task of tasks){
     task.privateKey = cryptoService.decryptData(task.sol_wallet_private);
     // task.proxy = await getProxy("C94CEC90972EE3B0", "SG", "10", task.sol_wallet_address);
-    // {
-    //       protocol: 'http',
-    //       host: '127.0.0.1',
-    //       port: 8888
-    //     }
+    
     // gate.nstproxy.io:24125:C94CEC90972EE3B0-residential-country_SG-r_10m-s_oNm6SC7J8q:monad-expensive
     // http://[username:password@]host:port
-    // task.proxy.proxyUrl = 'http://127.0.0.1:7890';
-    // task.proxy.proxyUrl = 'http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_oNm6SC7J8q:monad-expensive@gate.nstproxy.io:24125';
+    // task.proxy = {'proxyUrl' :  'http://127.0.0.1:7890'};
+    // task.proxy = {'proxyUrl' :  'http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_oNm6SC7J8q:monad-expensive@gate.nstproxy.io:24125'};
   }
 
   while(true){
-      await randomExecute(tasks, execute, 60000 * 4 * tasks.length);
-      await sleep(60000  * 60 * 8);
+      await randomExecute(tasks, execute2, 60000 * 4 * tasks.length);
+      await sleep(60000  * 60 * 6);
   }
   
 }

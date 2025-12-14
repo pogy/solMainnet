@@ -38,7 +38,7 @@ class SolUtil{
           TOKEN_PROGRAM_ID.toBuffer(),
           new PublicKey(tokenContract).toBuffer(),
         ],
-        new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')
+        new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')//Associated Token Program
       );
 
       // // 2. 读余额
@@ -48,12 +48,31 @@ class SolUtil{
 
       // 2. 直接读链上数据
       const accInfo = await connection.getParsedAccountInfo(ata);
-      if (!accInfo.value) throw new Error('ATA not found');
+      if (!accInfo.value) {
+        // throw new Error('ATA not found'); //
+        return {
+            'amount': '0',
+            'uiAmount': 0,
+            'uiAmountString': '0',
+        }
+      };
         // amount: '1',
         // decimals: 6,
         // uiAmount: 0.000001,
         // uiAmountString: '0.000001'
       return accInfo.value.data.parsed.info.tokenAmount;
+    }
+
+    static async getTokenDecimals(token, connection) {
+        const parsed = await connection.getParsedAccountInfo(new PublicKey(token)); 
+        if (parsed.value && parsed.value.data && parsed.value.data.parsed) { 
+            const decimals = parsed.value.data.parsed.info.decimals; 
+            console.log(`token 的位数 ${token}::${decimals}`);
+            return decimals;
+        } else { 
+            console.log(`无法读取 token 的位数 ${token}`);
+            throw new Error(`无法读取 token 的位数 ${token}`);
+        } 
     }
 
     static async sendTransaction(signerWallet, swapTransaction, connection, needCheck = true){
