@@ -58,14 +58,14 @@ async function execute(task){
   }
 }
 
-async function swapForSol(manager){
+async function swapForSol(title, manager){
   let targetTokens = [USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT];
   let tokenAmount;
   for (let item of targetTokens){
-    tokenAmount = await manager.getTokenBalance(JLP_CONTRACT);//有时获取不到准确余额
-    logger.log(` ${title} balance: ${tokenAmount.uiAmount} JLP` );
-    if(tokenAmount.uiAmount > 0.1){
-      await manager.swap(USDC_CONTRACT, SOL_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
+    tokenAmount = await manager.getTokenBalance(item);//有时获取不到准确余额
+    if(tokenAmount.uiAmount > 0.3){
+      logger.log(` ${title} balance: ${tokenAmount.uiAmount} JLP` );
+      await manager.swap(item, SOL_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
       await sleep(getRandomInt(3000)+30000);
     }
   }
@@ -85,7 +85,7 @@ async function execute2(task){
         logger.log(` ${title} balance: ${balance} SOL` );
         if(balance < 0.01){
           logger.log(` ${title} lace of sol. balance: ${balance} SOL` );
-          await swapForSol(manager);
+          await swapForSol(title, manager);
           return;
         }
 
@@ -123,7 +123,7 @@ async function execute2(task){
         }
 
         if(balance > 0.03){
-          await manager.swap(SOL_CONTRACT, JLP_CONTRACT, MathUtil.floor((balance-0.02) * 0.7, 3), 100);
+          await manager.swap(null, JLP_CONTRACT, MathUtil.floor((balance-0.02) * 0.7, 3), 100);
           await sleep(getRandomInt(3000)+30000);
         }
     }
@@ -136,7 +136,7 @@ async function execute2(task){
 }
 
 function getInfo(){
-  const TEST = "atraffic unlock laptop shoulder cable shuffle drum educate insane tone other lock soft garlic elite awake culture convince spoil powder reunion knock tower census";
+  const TEST = "very question try invest age latin like marble hair";
   console.log(cryptoService.encryptData(TEST))
 
   const manager = new JupiterManager(TEST, "http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_DVRMeFhlIC:monad-expensive@gate.nstproxy.io:24125");
@@ -160,14 +160,15 @@ async function init(tasks){
 }
 
 async function main() {
-
   let tasks = await db.get_common_airdroip_tasks('seeker');
   await cryptoService.init();
+  // await getInfo()
+  // return
 
   // await init(tasks)
   // return;
 
-  // const ids = ["6w6VoJ37PMujWA2C1B4XvNLTGMez6ehNEjSiq8mK7FTF"];
+  // const ids = ["DJF4wDhiYW7paNhnEmkWhSKJZq8iqVGhX95WoEHZTRv"];
   // tasks = tasks.filter(task => (ids.includes(task.sol_wallet_address)));
 
   for(let task of tasks){

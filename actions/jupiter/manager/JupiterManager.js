@@ -133,9 +133,16 @@ class JupiterManager {
 
   // USDC转SOL示例
   async swap(token0, token1, swapAmountHuman, slippage = 50) {
-    const tokenAmount = await this.getTokenBalance(token0);
-    if (tokenAmount.uiAmount < swapAmountHuman) {      
-      logger.info(chalk.red(` ${this.messageTitle} fail! lack of ${token0} balance ${tokenAmount.uiAmount} < ${swapAmountHuman}`));
+    let tokenAmount;
+    if(token0){
+      let tokenBal = await this.getTokenBalance(token0);
+      tokenAmount = tokenBal.uiAmount;
+    }else{
+      tokenAmount = await this.getSOLBalance();
+      token0 = SOL_CONTRACT;
+    }
+    if (tokenAmount < swapAmountHuman) {      
+      logger.info(chalk.red(` ${this.messageTitle} fail! lack of ${token0} balance ${tokenAmount} < ${swapAmountHuman}`));
       return;
     }
     
