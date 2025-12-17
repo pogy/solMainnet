@@ -48,3 +48,12 @@ project:
 jupiter 
 ...
 
+git add . 
+git commit -m "简短的提交说明"
+
+
+推送当前分支到远端（已有关联 upstream） git push
+
+第一次把本地分支推送到远端并设置上游（推荐） git push -u origin <branch-name>
+
+
