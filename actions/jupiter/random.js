@@ -183,8 +183,8 @@ async function main() {
   // await init(tasks)
   // return;
 
-  // const ids = ["DJF4wDhiYW7paNhnEmkWhSKJZq8iqVGhX95WoEHZTRv"];
-  // tasks = tasks.filter(task => (ids.includes(task.sol_wallet_address)));
+  const ids = ["pRwEDpRcTDkLQ8Hub2nQt9MhkxHVQLLL3EzUSFZFXqJ"];
+  tasks = tasks.filter(task => (ids.includes(task.sol_wallet_address)));
 
   for(let task of tasks){
     task.privateKey = cryptoService.decryptData(task.sol_wallet_private);
@@ -197,7 +197,7 @@ async function main() {
   }
 
   while(true){
-      await randomExecute(tasks, execute2, 60000 * 4 * tasks.length);
+      await randomExecute(tasks, execute2, 60000/1000 * 4 * tasks.length);
       await sleep(60000  * 60 * 8);
   }
   

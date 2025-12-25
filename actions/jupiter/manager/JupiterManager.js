@@ -18,7 +18,7 @@ class JupiterManager {
 
   constructor(mnemonic, proxyUrl) {
     if(mnemonic.indexOf(" ") > -1){
-      this.keypair = SolUtil.mnemonicToKeypair(mnemonic, 3);
+      this.keypair = SolUtil.mnemonicToKeypair(mnemonic, 0);
     }else{
       this.keypair = SolUtil.privateKeyToKeypair(mnemonic);
     }
