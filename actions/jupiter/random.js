@@ -13,7 +13,7 @@ const {MathUtil} = require('../../../common2/util/MathUtil');
 const {logger} = require('../../../common2/util/logger');
 const {getProxy} = require('../../../common2/proxy/proxy');
 const {JupiterManager} = require('./manager/JupiterManager');
-const {SOL_CONTRACT, USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT} = require('../../config/TokenConfig');
+const {SOL_CONTRACT, USDC_CONTRACT, USDT_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT} = require('../../config/TokenConfig');
 
 
 
@@ -59,7 +59,7 @@ async function execute(task){
 }
 
 async function swapForSol(title, manager){
-  let targetTokens = [USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT];
+  let targetTokens = [USDT_CONTRACT, USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT, GEOD_CONTRACT];
   let tokenAmount;
   for (let item of targetTokens){
     tokenAmount = await manager.getTokenBalance(item);//有时获取不到准确余额
@@ -80,7 +80,7 @@ async function execute2(task){
     manager = new JupiterManager(task.privateKey, task.proxy ? task.proxy.proxyUrl :null);
     let tokenAmount;
 
-    for(var i=0; i<100+getRandomInt(30); i++){
+    for(var i=0; i< 50 + getRandomInt(30); i++){
         const balance = await manager.getSOLBalance();//有时获取不到准确余额
         logger.log(` ${title} balance: ${balance} SOL` );
         if(balance < 0.01){
@@ -92,7 +92,7 @@ async function execute2(task){
         tokenAmount = await manager.getTokenBalance(GEOD_CONTRACT);//有时获取不到准确余额
         logger.log(` ${title} balance: ${tokenAmount.uiAmount} GEOD` );
         if(tokenAmount.uiAmount > 1){
-          await manager.swap(GEOD_CONTRACT, JLP_CONTRACT, MathUtil.floor(tokenAmount.uiAmount, 1), 100);
+          await manager.swap(GEOD_CONTRACT, USDC_CONTRACT, MathUtil.floor(tokenAmount.uiAmount, 1), 100);
           await sleep(getRandomInt(3000)+30000)
           continue;
         }
@@ -100,7 +100,7 @@ async function execute2(task){
         tokenAmount = await manager.getTokenBalance(JUP_CONTRACT);//有时获取不到准确余额
         logger.log(` ${title} balance: ${tokenAmount.uiAmount} JUP` );
         if(tokenAmount.uiAmount > 1){
-          await manager.swap(JUP_CONTRACT, JLP_CONTRACT, MathUtil.floor(tokenAmount.uiAmount, 1), 100);
+          await manager.swap(JUP_CONTRACT, USDC_CONTRACT, MathUtil.floor(tokenAmount.uiAmount, 1), 100);
           await sleep(getRandomInt(3000)+30000)
           continue;
         }
@@ -108,22 +108,29 @@ async function execute2(task){
         tokenAmount = await manager.getTokenBalance(JLP_CONTRACT);//有时获取不到准确余额
         logger.log(` ${title} balance: ${tokenAmount.uiAmount} JLP` );
         if(tokenAmount.uiAmount > 0.1){
-          await manager.swap(JLP_CONTRACT, JUP_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
+          await manager.swap(JLP_CONTRACT, USDC_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
           await sleep(getRandomInt(3000)+30000);
           continue;
         }
 
-        logger.log(` ${title} lace of jup & jlp. start revert` );
+        tokenAmount = await manager.getTokenBalance(USDT_CONTRACT);//有时获取不到准确余额
+        logger.log(` ${title} balance: ${tokenAmount.uiAmount} JLP` );
+        if(tokenAmount.uiAmount > 0.1){
+          await manager.swap(USDT_CONTRACT, USDC_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 2), 100);
+          await sleep(getRandomInt(3000)+30000);
+          continue;
+        }
 
         tokenAmount = await manager.getTokenBalance(USDC_CONTRACT);//有时获取不到准确余额
         logger.log(` ${title} balance: ${tokenAmount.uiAmount} USDC` );
         if(tokenAmount.uiAmount > 1){
-          await manager.swap(USDC_CONTRACT, JLP_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 1), 100);
+          await manager.swap(USDC_CONTRACT, USDT_CONTRACT,  MathUtil.floor(tokenAmount.uiAmount, 1), 100);
           await sleep(getRandomInt(3000)+30000);
+          continue;
         }
 
-        if(balance > 0.03){
-          await manager.swap(null, JLP_CONTRACT, MathUtil.floor((balance-0.02) * 0.7, 3), 100);
+        if(balance > 0.02){
+          await manager.swap(null, USDC_CONTRACT, MathUtil.floor((balance-0.015) * 0.7, 3), 100);
           await sleep(getRandomInt(3000)+30000);
         }
     }
@@ -136,19 +143,27 @@ async function execute2(task){
 }
 
 function getInfo(){
-  const TEST = "very question try invest age latin like marble hair";
-  console.log(cryptoService.encryptData(TEST))
+  const TEST = "cram town couple lottery dove celery region new nesta notable frown elite";
 
   const manager = new JupiterManager(TEST, "http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_DVRMeFhlIC:monad-expensive@gate.nstproxy.io:24125");
   console.log(manager.getWalletAddress());
+  let privateKey = manager.getPrivateKey();
+  console.log(privateKey);
+  console.log(cryptoService.encryptData(privateKey))
 }
 
 async function init(tasks){
   for(let task of tasks){
     try{
+      if(task.sol_wallet_address != '6yzifBy4HA56bnD42yKHLCqmvCd8kE2rw2sTwRLPuXwu'){
+        continue;
+      }
+
       task.privateKey = cryptoService.decryptData(task.sol_wallet_private);
       const manager = new JupiterManager(task.privateKey, "http://C94CEC90972EE3B0-residential-country_SG-r_10m-s_DVRMeFhlIC:monad-expensive@gate.nstproxy.io:24125");
       task.sol_wallet_address = manager.getWalletAddress();
+        console.log(task)
+
       task.balance = (await manager.getSOLBalance());
       await db.update_common_airdroip_task(task);
       console.log(task.sol_wallet_address)
@@ -183,7 +198,7 @@ async function main() {
 
   while(true){
       await randomExecute(tasks, execute2, 60000 * 4 * tasks.length);
-      await sleep(60000  * 60 * 6);
+      await sleep(60000  * 60 * 8);
   }
   
 }

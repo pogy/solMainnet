@@ -3,6 +3,7 @@ const solc = require('solc');
 const {logger} = require('../../common2/util/logger');
 const { VersionedTransaction, Keypair,PublicKey, Connection } = require('@solana/web3.js');
 const bip39 = require('bip39');
+const bs58 = require('bs58');  // CommonJS 方式（旧项目）
 const { TOKEN_PROGRAM_ID, getAccount } = require( '@solana/spl-token');
 const { derivePath } = require('ed25519-hd-key');
 
@@ -18,6 +19,14 @@ class SolUtil{
       const derivedSeed = derivePath(path, seed.toString('hex')).key;
       
       return Keypair.fromSeed(derivedSeed);
+    }
+
+    static privateKeyToKeypair(privateKeyBase58) {
+        // 步骤1: 解码 Base58 为字节数组
+        const secretKeyBytes = bs58.default.decode(privateKeyBase58);
+
+        // 步骤2: 从 secretKey 创建 Keypair
+        return Keypair.fromSecretKey(secretKeyBytes);
     }
 
     // 获取SOL余额

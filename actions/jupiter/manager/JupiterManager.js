@@ -1,4 +1,6 @@
 const chalk = require('chalk');
+const bs58 = require('bs58');  // CommonJS 方式（旧项目）
+
 const { Connection } = require('@solana/web3.js');
 
 const {logger} = require('../../../../common2/util/logger');
@@ -15,7 +17,11 @@ const {SOL_CONTRACT, USDC_CONTRACT, JUP_CONTRACT, JLP_CONTRACT} = require('../..
 class JupiterManager {
 
   constructor(mnemonic, proxyUrl) {
-    this.keypair = SolUtil.mnemonicToKeypair(mnemonic, 0);
+    if(mnemonic.indexOf(" ") > -1){
+      this.keypair = SolUtil.mnemonicToKeypair(mnemonic, 3);
+    }else{
+      this.keypair = SolUtil.privateKeyToKeypair(mnemonic);
+    }
     this.jupiter = new JupiterService(proxyUrl);
     this.connection = new Connection(RPC_URL);
     this.walletAddress = this.keypair.publicKey.toBase58();
@@ -25,6 +31,15 @@ class JupiterManager {
   getWalletAddress(){
     return this.walletAddress;
   }
+
+  getPrivateKey(){
+    // 假设 this.keypair 是 Keypair 实例
+    const secretKeyBytes = this.keypair.secretKey;  // Uint8Array (64 bytes)
+    // console.log(bs58, secretKeyBytes);
+    // 输出为 Base58 字符串（Phantom 等钱包导出的常见格式）
+    return bs58.default.encode(secretKeyBytes);
+  }
+
   // 获取SOL余额
   async getSOLBalance() {
     const balance = await SolUtil.getSOLBalance(this.keypair.publicKey, this.connection);

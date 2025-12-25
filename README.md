@@ -57,3 +57,7 @@ git commit -m "简短的提交说明"
 第一次把本地分支推送到远端并设置上游（推荐） git push -u origin <branch-name>
 
 
+
+
+
+https://api.ruku.gz-mengku.com/api/common/commonUserSubSku/product?customerUserId=&country=SHOP&type=DAJIANG&subType=SHOP&Authorization=eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhZ2lsZUJQTSIsInN1YiI6IjEzMjQ5MDczODU1IiwiZXhwIjoxNzcxNDg3MDMxLCJuYmYiOjE3NjYzMDIxMzEsImlhdCI6MTc2NjMwMzAzMX0.KOz8tkCzax4XMPEbhIlq4OJc7mrQysZFVQ6UAPDtSHY8exyFI8OiDJowON3fLceembyjA5I5GOcvYwfnYFvpAA
